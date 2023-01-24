@@ -1,0 +1,937 @@
+[
+    {
+        "id": "1d877587.fd8f3a",
+        "type": "tab",
+        "label": "Controller",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "474318a3.b09ce8",
+        "type": "exec",
+        "z": "1d877587.fd8f3a",
+        "command": "jstest/dev/input/js0",
+        "addpay": false,
+        "append": "",
+        "useSpawn": "true",
+        "timer": "",
+        "oldrc": false,
+        "name": "",
+        "x": 583.750114440918,
+        "y": 225.50003051757812,
+        "wires": [
+            [
+                "c4396629.327cb8",
+                "9c903f9f.b3eac"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "97014d9b.f31a4",
+        "type": "inject",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "topic": "",
+        "payload": "0",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 601.5000686645508,
+        "y": 69.50000953674316,
+        "wires": [
+            [
+                "474318a3.b09ce8"
+            ]
+        ]
+    },
+    {
+        "id": "c4396629.327cb8",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Split axes",
+        "func": "var str = msg.payload;\nvar axes =str.slice(str.indexOf(\"Axes\")+ 5, str.indexOf(\"Buttons\"));\naxes = axes.trimLeft();\n//varaxesNum = 0;\nvar axesValue = [];\nvar temp = axes;\nvar count = [];\nvar countNum = 0;\nfor(i= 0; i <= axes.length; i++)\n{\n if(!isNaN(parseInt(axes[i])) && axes[i+1] === ' ' && axes[i+2]=== ' ' && !isNaN(parseInt(axes[i+3])))\n {\n count[countNum] = i+1;\n countNum++;\n}\n}\nfor(i = 0; i <= countNum; i++)\n{\n temp = temp.slice(temp.indexOf(\":\") + 1);\n temp =temp.trimLeft();\n var value = temp.slice(0, temp.indexOf(\" \"));\n axesValue[i] =parseInt(value);\n}\n\nreturn {payload : {h1 : axesValue[0],v1 : axesValue[1],h2 :axesValue[2],v2: axesValue[3],h3 : axesValue[4],v3 :axesValue[5]}};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 632.0000343322754,
+        "y": 374.0000057220459,
+        "wires": [
+            [
+                "8e7f65ae.1da168",
+                "e33b8e2.32a817",
+                "a5f9ae06.83cf3",
+                "e6bc49cd.26f628",
+                "c3dd58a3.2f1d38",
+                "73139d6.a702d64",
+                "30b49c92.484194"
+            ]
+        ]
+    },
+    {
+        "id": "9c903f9f.b3eac",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Split button",
+        "func": "var str = msg.payload;\nvar buttons =str.slice(str.indexOf(\"Buttons\")+ 8);\nbuttons = buttons.trimLeft();\n//var buttonsNum = 0;\n\nvarbuttonsValue = [];\nvar temp = buttons;\nvar count = [];\nvar countNum = 0;\nfor(i = 0; i <=buttons.length; i++)\n{\n if((buttons[i] == 'f' || buttons[i] == 'n') && buttons[i+1] === ' ' &&buttons[i+2] === ' ' && !isNaN(parseInt(buttons[i+3])))\n {\n count[countNum] = i+1;\ncountNum++;\n }\n else if((buttons[i] == 'f' || buttons[i] == 'n') && buttons[i+1] === ' ' &&!isNaN(parseInt(buttons[i+2])))\n {\n count[countNum] = i+1;\n countNum++;\n}\n}\nfor(i = 0; i <= countNum; i++)\n{\n temp = temp.slice(temp.indexOf(\":\") + 1);\n temp =temp.trimLeft();\n var value = temp.slice(0, temp.indexOf(\" \"));\n value = value.trim();\nif(value == \"off\")\n {\n buttonsValue[i] = 0; \n }\n else\n {\n buttonsValue[i] =1; \n }\n \n}\nreturn {payload : {y: buttonsValue[0], b: buttonsValue[1], a: buttonsValue[2], x:buttonsValue[3],y: buttonsValue[4], rb: buttonsValue[5], lt: buttonsValue[6], rt: buttonsValue[7],sl: buttonsValue[8], st: buttonsValue[9], ls: buttonsValue[10], rs: buttonsValue[11], ho:buttonsValue[12]}}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 645,
+        "y": 463,
+        "wires": [
+            [
+                "8e7f65ae.1da168",
+                "74a6ae86.d1796",
+                "46a8ae06.2ed35",
+                "af20473a.ad9d08",
+                "334c41b6.566c7e"
+            ]
+        ]
+    },
+    {
+        "id": "8e7f65ae.1da168",
+        "type": "debug",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 978.2500267028809,
+        "y": 424.50001335144043,
+        "wires": []
+    },
+    {
+        "id": "d64d4b89.6de488",
+        "type": "range",
+        "z": "1d877587.fd8f3a",
+        "minin": "-32767",
+        "maxin": "32767",
+        "minout": "-100",
+        "maxout": "100",
+        "action": "clamp",
+        "round": true,
+        "property": "payload",
+        "name": "h1",
+        "x": 1008,
+        "y": 82,
+        "wires": [
+            [
+                "892feac4.15f538"
+            ]
+        ]
+    },
+    {
+        "id": "a8dea1e2.30693",
+        "type": "range",
+        "z": "1d877587.fd8f3a",
+        "minin": "-32767",
+        "maxin": "32767",
+        "minout": "100",
+        "maxout": "-100",
+        "action": "clamp",
+        "round": true,
+        "property": "payload",
+        "name": "v1",
+        "x": 1023.0000534057617,
+        "y": 138.00000762939453,
+        "wires": [
+            [
+                "88e6e94e.d9b938"
+            ]
+        ]
+    },
+    {
+        "id": "e33b8e2.32a817",
+        "type": "change",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.h1",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 835,
+        "y": 77,
+        "wires": [
+            [
+                "d64d4b89.6de488"
+            ]
+        ]
+    },
+    {
+        "id": "a5f9ae06.83cf3",
+        "type": "change",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.v1",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 846,
+        "y": 132,
+        "wires": [
+            [
+                "a8dea1e2.30693"
+            ]
+        ]
+    },
+    {
+        "id": "7422b5c0.5dca6c",
+        "type": "range",
+        "z": "1d877587.fd8f3a",
+        "minin": "-32767",
+        "maxin": "32767",
+        "minout": "-100",
+        "maxout": "100",
+        "action": "clamp",
+        "round": true,
+        "property": "payload",
+        "name": "h2",
+        "x": 1019,
+        "y": 196,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7418254c.1293dc",
+        "type": "range",
+        "z": "1d877587.fd8f3a",
+        "minin": "-32767",
+        "maxin": "32767",
+        "minout": "100",
+        "maxout": "-100",
+        "action": "clamp",
+        "round": true,
+        "property": "payload",
+        "name": "v2",
+        "x": 1029,
+        "y": 247,
+        "wires": [
+            [
+                "1c9bef02.d2b371"
+            ]
+        ]
+    },
+    {
+        "id": "e6bc49cd.26f628",
+        "type": "change",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.h2",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 846,
+        "y": 191,
+        "wires": [
+            [
+                "7422b5c0.5dca6c"
+            ]
+        ]
+    },
+    {
+        "id": "c3dd58a3.2f1d38",
+        "type": "change",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.v2",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 857,
+        "y": 246,
+        "wires": [
+            [
+                "7418254c.1293dc"
+            ]
+        ]
+    },
+    {
+        "id": "92dfb76f.ea8948",
+        "type": "range",
+        "z": "1d877587.fd8f3a",
+        "minin": "-32767",
+        "maxin": "32767",
+        "minout": "-100",
+        "maxout": "100",
+        "action": "clamp",
+        "round": true,
+        "property": "payload",
+        "name": "h3",
+        "x": 1036,
+        "y": 305,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7f39e25c.f7107c",
+        "type": "range",
+        "z": "1d877587.fd8f3a",
+        "minin": "-32767",
+        "maxin": "32767",
+        "minout": "100",
+        "maxout": "-100",
+        "action": "clamp",
+        "round": true,
+        "property": "payload",
+        "name": "v3",
+        "x": 1046,
+        "y": 356,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "73139d6.a702d64",
+        "type": "change",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.h3",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 863,
+        "y": 300,
+        "wires": [
+            [
+                "92dfb76f.ea8948"
+            ]
+        ]
+    },
+    {
+        "id": "30b49c92.484194",
+        "type": "change",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.v3",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 874,
+        "y": 355,
+        "wires": [
+            [
+                "7f39e25c.f7107c"
+            ]
+        ]
+    },
+    {
+        "id": "74a6ae86.d1796",
+        "type": "change",
+        "z": "1d877587.fd8f3a",
+        "name": "a",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.a",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 843,
+        "y": 483,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "46a8ae06.2ed35",
+        "type": "change",
+        "z": "1d877587.fd8f3a",
+        "name": "b",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.b",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 854,
+        "y": 538,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "af20473a.ad9d08",
+        "type": "change",
+        "z": "1d877587.fd8f3a",
+        "name": "x",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.x",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 854,
+        "y": 597,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "334c41b6.566c7e",
+        "type": "change",
+        "z": "1d877587.fd8f3a",
+        "name": "y",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.y",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 812.9999885559082,
+        "y": 668.9999961853027,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1c9bef02.d2b371",
+        "type": "switch",
+        "z": "1d877587.fd8f3a",
+        "name": "Forward or Backward orMiddle?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "lt",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 1307.228099822998,
+        "y": 577.6785659790039,
+        "wires": [
+            [
+                "b454bb4e.37fe18"
+            ],
+            [
+                "58c888d6.375f68"
+            ],
+            [
+                "af990303.6421e"
+            ]
+        ]
+    },
+    {
+        "id": "88e6e94e.d9b938",
+        "type": "switch",
+        "z": "1d877587.fd8f3a",
+        "name": "Forward orBackward orMiddle?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "lt",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 1281.093505859375,
+        "y": 277.3333511352539,
+        "wires": [
+            [
+                "2baa5cc7.945224"
+            ],
+            [
+                "a1be45b9.c61b88"
+            ],
+            [
+                "56a7cb02.6cd5c4"
+            ]
+        ]
+    },
+    {
+        "id": "9a44721c.d8382",
+        "type": "PCA9685out",
+        "z": "1d877587.fd8f3a",
+        "name": "Motor1_speed",
+        "pca9685": "df983ac3.a00478",
+        "channel": "5",
+        "payload": "",
+        "unit": "percent",
+        "onStep": "0",
+        "x": 2080,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "b454bb4e.37fe18",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Run",
+        "func": "varspeed1 = Math.abs(msg.payload/2);\n\nreturn {payload :speed1};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1529.7065773010254,
+        "y": 531.6071281433105,
+        "wires": [
+            [
+                "9a44721c.d8382"
+            ]
+        ]
+    },
+    {
+        "id": "af990303.6421e",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Stop",
+        "func": "var speed1 = 0;\nvar dir = 0;\n\nglobal.set(\"dir2\", 0)\n\nreturn [{payload : speed1},{payload :dir}];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 1530,
+        "y": 620,
+        "wires": [
+            [
+                "9a44721c.d8382"
+            ],
+            [
+                "b519c4e0.dc4538"
+            ]
+        ]
+    },
+    {
+        "id": "9d99810d.0acf9",
+        "type": "PCA9685out",
+        "z": "1d877587.fd8f3a",
+        "name": "Motor1_direction",
+        "pca9685": "df983ac3.a00478",
+        "channel": "4",
+        "payload": "",
+        "unit": "percent",
+        "onStep": "0",
+        "x": 2082.714252471924,
+        "y": 609.7142729759216,
+        "wires": []
+    },
+    {
+        "id": "58c888d6.375f68",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Run",
+        "func": "var speed1 = Math.abs(msg.payload/2);\nvar dir = 100;\n\nreturn [{payload : speed1},{payload :dir}];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 1534.1066780090332,
+        "y": 568.75,
+        "wires": [
+            [
+                "c9287c69.bf7bc"
+            ],
+            [
+                "9d99810d.0acf9"
+            ]
+        ]
+    },
+    {
+        "id": "b519c4e0.dc4538",
+        "type": "delay",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1729.6781120300293,
+        "y": 632.8095359802246,
+        "wires": [
+            [
+                "9d99810d.0acf9"
+            ]
+        ]
+    },
+    {
+        "id": "fdec4220.7d056",
+        "type": "delay",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1890,
+        "y": 480,
+        "wires": [
+            [
+                "9a44721c.d8382"
+            ]
+        ]
+    },
+    {
+        "id": "2baa5cc7.945224",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Run",
+        "func": "var speed1 = Math.abs(msg.payload/2);\n\nreturn {payload :speed1};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1511.4333610534668,
+        "y": 260.35712814331055,
+        "wires": [
+            [
+                "4422bd20.580d34"
+            ]
+        ]
+    },
+    {
+        "id": "56a7cb02.6cd5c4",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Stop",
+        "func": "var speed1 = 0;\nvar dir = 0;\n\nglobal.set(\"dir1\", false);\n\n\nreturn [{payload :speed1},{payload :dir}];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 1511.3978157043457,
+        "y": 338.3452444076538,
+        "wires": [
+            [
+                "4422bd20.580d34"
+            ],
+            [
+                "b5782885.0e4308"
+            ]
+        ]
+    },
+    {
+        "id": "a1be45b9.c61b88",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Run",
+        "func": "var speed1 = Math.abs(msg.payload/2);\nvar dir = 100;\n\nreturn [{payload: speed1},{payload :dir}];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 1510,
+        "y": 300,
+        "wires": [
+            [
+                "1802ba8c.71dcc5"
+            ],
+            [
+                "2d7240fd.fc2a6"
+            ]
+        ]
+    },
+    {
+        "id": "b5782885.0e4308",
+        "type": "delay",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1745.4050521850586,
+        "y": 421.8095760345459,
+        "wires": [
+            [
+                "2d7240fd.fc2a6"
+            ]
+        ]
+    },
+    {
+        "id": "e69e8fe4.cb329",
+        "type": "delay",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1879.477882385254,
+        "y": 283.3070411682129,
+        "wires": [
+            [
+                "4422bd20.580d34"
+            ]
+        ]
+    },
+    {
+        "id": "2d7240fd.fc2a6",
+        "type": "PCA9685out",
+        "z": "1d877587.fd8f3a",
+        "name": "Motor2_direction",
+        "pca9685": "df983ac3.a00478",
+        "channel": "6",
+        "payload": "",
+        "unit": "percent",
+        "onStep": "0",
+        "x": 2037.8101348876953,
+        "y": 406.25000381469727,
+        "wires": []
+    },
+    {
+        "id": "4422bd20.580d34",
+        "type": "PCA9685out",
+        "z": "1d877587.fd8f3a",
+        "name": "Motor2_speed",
+        "pca9685": "df983ac3.a00478",
+        "channel": "7",
+        "payload": "",
+        "unit": "percent",
+        "onStep": "0",
+        "x": 2047.0601348876953,
+        "y": 338.16665267944336,
+        "wires": []
+    },
+    {
+        "id": "b82891a3.38896",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Initvariable",
+        "func": "global.set(\"dir1\", false);\nglobal.set(\"dir2\",false);\n",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 1717.2500534057617,
+        "y": 485.00001335144043,
+        "wires": []
+    },
+    {
+        "id": "e5eeea33.e38258",
+        "type": "inject",
+        "z": "1d877587.fd8f3a",
+        "name": "",
+        "topic": "",
+        "payload": "speed",
+        "payloadType": "global",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 1518.2222290039062,
+        "y": 467.2221626705593,
+        "wires": [
+            [
+                "b82891a3.38896"
+            ]
+        ]
+    },
+    {
+        "id": "1802ba8c.71dcc5",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Check dir1",
+        "func": "var dir= true;\n\n\nif(dir !==global.get(\"dir1\"))\n{\n global.set(\"dir1\", dir);\n return [msg, null];\n}\nelse\n{\n return[null,msg];\n}\n",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 1692.626724243164,
+        "y": 301.0000247955322,
+        "wires": [
+            [
+                "e69e8fe4.cb329"
+            ],
+            [
+                "4422bd20.580d34"
+            ]
+        ]
+    },
+    {
+        "id": "c9287c69.bf7bc",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Check dir2",
+        "func": "var dir= true;\n\n\nif(dir !== global.get(\"dir2\"))\n{\nglobal.set(\"dir2\", dir);\n return [msg, null];\n}\nelse\n{\n return [null,msg];\n}\n",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 1699.6781120300293,
+        "y": 557.9285717010498,
+        "wires": [
+            [
+                "fdec4220.7d056"
+            ],
+            [
+                "9a44721c.d8382"
+            ]
+        ]
+    },
+    {
+        "id": "892feac4.15f538",
+        "type": "switch",
+        "z": "1d877587.fd8f3a",
+        "name": "Turn Left or Not Turn?",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "lt",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "gte",
+                "v": "0",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1260,
+        "y": 120,
+        "wires": [
+            [
+                "c140bcb6.c843b"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "c140bcb6.c843b",
+        "type": "function",
+        "z": "1d877587.fd8f3a",
+        "name": "Run = 1/2 V2+",
+        "func": "\nglobal.get(\"speed\")\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1500,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    }
+]
